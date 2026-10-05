@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FullStack Leaderboard Round 1</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #0a0a0f;
+            --bg-card: #15151e;
+            --text-main: #e2e2e9;
+            --text-muted: #8a8a9d;
+            --accent: #5e6ad2;
+            --accent-glow: rgba(94, 106, 210, 0.4);
+            --gold: #FFD700;
+            --silver: #E3E4E5;
+            --bronze: #CD7F32;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-main);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(94, 106, 210, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(94, 106, 210, 0.05) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #ffffff 0%, #a5a5b4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .leaderboard {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .student-card {
+            display: flex;
+            align-items: center;
+            background-color: var(--bg-card);
+            padding: 1.2rem 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            overflow: hidden;
+        }
+
+        .student-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            transition: width 0.3s ease;
+        }
+
+        .student-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4), 0 0 15px var(--accent-glow);
+            border-color: rgba(94, 106, 210, 0.3);
+            background-color: #1a1a24;
+        }
+
+        .student-card:hover::before {
+            width: 6px;
+            background: var(--accent);
+        }
+
+        .rank {
+            font-size: 1.4rem;
+            font-weight: 800;
+            padding: 0 15px;
+            min-width: 65px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border-radius: 12px;
+            background-color: #1e1e2d;
+            color: var(--text-muted);
+            margin-right: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .rank-num {
+            font-family: monospace;
+        }
+
+        .trophy {
+            font-size: 1.4rem;
+            line-height: 1;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .rank-1 .rank { 
+            background: linear-gradient(135deg, #FFDF00, #D4AF37); 
+            color: #000; 
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); 
+        }
+        .rank-2 .rank { 
+            background: linear-gradient(135deg, #E3E4E5, #9EA0A3); 
+            color: #000; 
+            box-shadow: 0 0 20px rgba(192, 192, 192, 0.2); 
+        }
+        .rank-3 .rank { 
+            background: linear-gradient(135deg, #E0A96D, #CD7F32); 
+            color: #fff; 
+            box-shadow: 0 0 20px rgba(205, 127, 50, 0.2); 
+        }
+
+        .rank-1::before { background: var(--gold); width: 6px; }
+        .rank-2::before { background: var(--silver); width: 6px; }
+        .rank-3::before { background: var(--bronze); width: 6px; }
+        
+        .rank-1:hover::before { width: 8px; background: var(--gold); }
+        .rank-2:hover::before { width: 8px; background: var(--silver); }
+        .rank-3:hover::before { width: 8px; background: var(--bronze); }
+
+        .details {
+            flex-grow: 1;
+        }
+
+        .name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.3px;
+        }
+
+        .breakdown {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .stat-badge {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-badge strong {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .total-score {
+            text-align: right;
+            min-width: 90px;
+        }
+
+        .score-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 0.75rem;
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 600px) {
+            .student-card { 
+                padding: 1.2rem; 
+                flex-wrap: wrap; 
+            }
+            .rank { 
+                margin-right: 1rem; 
+                min-width: 55px;
+                padding: 0 10px;
+                height: 40px; 
+                font-size: 1.2rem; 
+            }
+            .trophy { font-size: 1.2rem; }
+            h1 { font-size: 2rem; }
+            .name { font-size: 1.1rem; }
+            .breakdown { gap: 8px; margin-top: 8px; }
+            .stat-badge { padding: 3px 8px; font-size: 0.75rem; }
+            .total-score { 
+                width: 100%; 
+                display: flex; 
+                align-items: baseline; 
+                justify-content: flex-end;
+                gap: 8px;
+                margin-top: 15px;
+                padding-top: 15px;
+                border-top: 1px solid rgba(255,255,255,0.05);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <h1>FullStack Leaderboard Round 1</h1>
+            <div class="subtitle">Ranking based on Tasks, Projects, and Session performance</div>
+        </div>
+        
+        <div class="leaderboard" id="leaderboard">
+        </div>
+    </div>
+
+    <script>
+        const students = [
+            { name: "Nour Hoda Elsayed", task: 50, project: 0, sessions: 40 },
+            { name: "Ibrahim Mokhles", task: 0, project: 0, sessions: 10 },
+            { name: "Yasmine Elhossiny", task: 47, project: 0, sessions: 50 },
+            { name: "Aya Ibrahim Ali", task: 10, project: 0, sessions: 50 },
+            { name: "Thomas Shaker Shokry", task: 0, project: 0, sessions: 20 },
+            { name: "Yusouf Alaa Medhat", task: 0, project: 0, sessions: 0},
+            { name: "Malik Nasir Ali", task: 40, project: 0, sessions: 50 },
+            { name: "Yatabeby Elhashmy", task: 10, project: 0, sessions: 30 },
+           
+        ];
+
+        students.forEach(s => s.total = s.task + s.project + s.sessions);
+
+        students.sort((a, b) => {
+            if (b.total !== a.total) {
+                return b.total - a.total;
+            }
+            return a.name.localeCompare(b.name);
+        });
+
+        let currentRank = 1;
+        let previousTotal = students.length > 0 ? students[0].total : 0;
+
+        students.forEach((student, index) => {
+            if (student.total < previousTotal) {
+                currentRank++;
+                previousTotal = student.total;
+            }
+            student.rank = currentRank;
+        });
+
+        const container = document.getElementById('leaderboard');
+
+        students.forEach((student) => {
+            let rankClass = '';
+            let trophy = '';
+            
+            if (student.rank === 1) {
+                rankClass = 'rank-1';
+                trophy = '🏆'; 
+            } else if (student.rank === 2) {
+                rankClass = 'rank-2';
+                trophy = '🥈'; 
+            } else if (student.rank === 3) {
+                rankClass = 'rank-3';
+                trophy = '🥉'; 
+            } else {
+                trophy = '🏅'; 
+            }
+
+            const card = document.createElement('div');
+            card.className = `student-card ${rankClass}`;
+            
+            card.innerHTML = `
+                <div class="rank">
+                    <span class="rank-num">${student.rank}</span>
+                    <span class="trophy">${trophy}</span>
+                </div>
+                <div class="details">
+                    <div class="name">${student.name}</div>
+                    <div class="breakdown">
+                        <div class="stat-badge">Tasks <strong>${student.task}</strong></div>
+                        <div class="stat-badge">Projects <strong>${student.project}</strong></div>
+                        <div class="stat-badge">Sessions <strong>${student.sessions}</strong></div>
+                    </div>
+                </div>
+                <div class="total-score">
+                    <div class="score-number">${student.total}</div>
+                    <div class="score-label">Total PTS</div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    </script>
+</body>
+</html>
